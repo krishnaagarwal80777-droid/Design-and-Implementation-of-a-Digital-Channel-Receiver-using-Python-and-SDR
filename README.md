@@ -1,39 +1,73 @@
-# Design-and-Implementation-of-a-Digital-Channel-Receiver-using-Python-and-SDR
-## Project Overview
+# SDR-Based Digital Channel Receiver for 4G/5G Spectrum Monitoring
 
-This project implements a basic digital channel receiver using Python
-signal processing techniques and Software Defined Radio (SDR) concepts.
-The system detects multiple frequency channels present in a received
-signal, automatically identifies the strongest channel, extracts it
-using digital filtering, and displays its spectrum on a computer.
+## Project Summary
 
-The project is developed in two stages:
+This project implements a basic Software Defined Radio (SDR) based
+digital channel receiver using Python. The system performs spectrum
+analysis, detects active channels, selects the strongest channel
+automatically, extracts it using digital filtering, and displays the
+spectrum of the extracted channel.
 
-1.  Simulation stage using synthetic multi-channel signals
-2.  Hardware stage using SDR to receive real RF signals
+The project was completed in two major stages:
 
-The objective is to demonstrate fundamental receiver operations such as
-spectrum analysis, channel detection, channel selection, and signal
-extraction using Digital Signal Processing (DSP).
+1.  Simulation of a multi‑channel communication system using Python DSP
+2.  Integration with ADALM Pluto SDR to process real RF signals from
+    4G/5G bands
+
+The goal is to demonstrate the fundamental operations of a digital
+communication receiver such as signal acquisition, FFT spectrum
+analysis, channel detection, channel selection, filtering, and spectrum
+visualization.
 
 ------------------------------------------------------------------------
 
 ## Problem Statement
 
-Design and implement a simple channel receiver in which the output of
-any detected channel is displayed as a frequency spectrum on a PC.
+Implementation of a 4G/5G channel receiver using SDR where the output of
+any detected channel is displayed as a spectrum on a PC.
 
 ------------------------------------------------------------------------
 
-## Project Objectives
+## Work Completed
 
-• Simulate a multi-channel communication environment\
-• Perform frequency domain analysis using FFT\
-• Detect available channels automatically\
-• Implement a digital channel receiver using filtering\
-• Extract the strongest detected channel\
-• Display the spectrum of the extracted channel\
-• Integrate SDR hardware for real signal acquisition
+### Day 1 -- Simulation Development
+
+The first stage focused on building the complete receiver pipeline using
+simulated signals.
+
+The following components were implemented:
+
+• Multi‑channel signal generation\
+• Noise modelling (AWGN)\
+• FFT spectrum analysis\
+• Automatic channel detection\
+• Strongest channel selection\
+• Digital channel receiver using bandpass filtering\
+• Channel power measurement\
+• Output spectrum visualization
+
+This allowed validation of the receiver design before hardware
+integration.
+
+------------------------------------------------------------------------
+
+### Day 2 -- SDR Integration
+
+The second stage replaced the simulated signal source with real RF
+samples from Pluto SDR.
+
+Work completed:
+
+• Installation of pyadi‑iio and libiio drivers\
+• Pluto SDR connection testing\
+• RF sample acquisition\
+• FFT processing of real signals\
+• Detection of active spectrum channels\
+• Extraction of strongest detected channel\
+• Display of extracted channel spectrum
+
+The DSP pipeline remained unchanged, demonstrating correct system
+design.
 
 ------------------------------------------------------------------------
 
@@ -41,13 +75,15 @@ any detected channel is displayed as a frequency spectrum on a PC.
 
 ### Simulation Architecture
 
-Signal Source (Simulated Multi-Channel Signal)\
+Signal Generator (Multi‑Channel Signal)\
 ↓\
-Noise Modeling\
+Noise Addition\
 ↓\
-FFT Spectrum Analysis\
+FFT Spectrum Analyzer\
 ↓\
 Channel Detection\
+↓\
+Strongest Channel Selection\
 ↓\
 Digital Channel Receiver (Bandpass Filter)\
 ↓\
@@ -55,242 +91,212 @@ Extracted Channel Spectrum Display
 
 ------------------------------------------------------------------------
 
-### SDR Implementation Architecture
+### SDR Architecture
 
-RF Signal Source\
-↓\
-RTL-SDR Receiver\
+Pluto SDR RF Input\
 ↓\
 Digital Sampling\
 ↓\
 FFT Spectrum Analysis\
 ↓\
-Channel Detection Algorithm\
+Noise Floor Estimation\
+↓\
+Channel Detection\
+↓\
+Strongest Channel Selection\
 ↓\
 Digital Channel Receiver\
 ↓\
-Spectrum Visualization on PC
+Output Channel Spectrum Display
 
 ------------------------------------------------------------------------
 
 ## Working Principle
 
-The project follows the basic structure of a digital communication
-receiver.
-
 ### Signal Acquisition
 
-Multiple sinusoidal signals are generated to simulate different
-communication channels. These signals represent carriers at different
-frequencies.
+In simulation, multiple sine waves represent communication channels.
+Noise is added to simulate real wireless conditions.
 
-Mathematical model:
-
-x(t) = sin(2πf₁t) + sin(2πf₂t) + sin(2πf₃t)
-
-Noise is added to simulate real wireless channel conditions.
+In SDR mode, real RF signals are captured directly from Pluto SDR.
 
 ------------------------------------------------------------------------
 
-### Frequency Spectrum Analysis
+### Spectrum Analysis
 
-The Fast Fourier Transform (FFT) is applied to convert the time domain
-signal into the frequency domain. This allows identification of
-individual channels as peaks in the spectrum.
+Fast Fourier Transform (FFT) converts the time domain signal into
+frequency domain representation.
 
-FFT converts:
+FFT reveals the frequency components present in the received signal.
 
-Time domain → Frequency domain
-
-The magnitude of FFT indicates signal strength at each frequency.
+This allows detection of active communication channels.
 
 ------------------------------------------------------------------------
 
 ### Channel Detection
 
-Channel detection is performed using peak detection on the FFT magnitude
-spectrum. Peaks above a defined threshold are treated as valid
-communication channels.
+Channels are detected by identifying peaks in the FFT magnitude
+spectrum.
 
-Detected channels correspond to dominant frequency components.
+An adaptive threshold based on noise floor is used to distinguish real
+signals from noise.
 
 ------------------------------------------------------------------------
 
 ### Strongest Channel Selection
 
-The strongest channel is identified by selecting the peak with the
-highest magnitude.
+The strongest channel is defined as the frequency with highest magnitude
+in the spectrum.
 
-Meaning of strongest channel:\
-The frequency component with highest power in the received signal.
+This corresponds to the highest power signal and typically represents
+the best signal‑to‑noise ratio.
 
-This typically represents the signal with best signal-to-noise ratio.
+The receiver automatically selects this channel.
 
 ------------------------------------------------------------------------
 
 ### Digital Channel Receiver
 
-The receiver extracts the selected channel using a bandpass filter
-centered around the detected frequency.
+A Butterworth bandpass filter is designed around the detected channel
+frequency.
 
-Filter operation:
+The filter allows only the selected channel to pass while rejecting
+other signals.
 
-Pass band:\
-f_center ± bandwidth
-
-Reject:\
-All other frequencies
-
-A Butterworth bandpass filter is used due to its smooth frequency
-response.
+This stage represents the digital channel receiver.
 
 ------------------------------------------------------------------------
 
 ### Channel Extraction
 
-The bandpass filter removes unwanted channels and noise, leaving only
-the selected channel.
+The filtered signal contains only the selected channel.
 
-This stage represents the digital channel receiver block.
+This verifies correct receiver operation.
 
 ------------------------------------------------------------------------
 
-### Spectrum Visualization
+### Output Spectrum
 
-The extracted channel is analyzed again using FFT to verify successful
-channel reception. The output spectrum confirms that only the desired
-channel remains.
+FFT is again applied on the filtered signal to display the spectrum of
+the extracted channel.
 
-This satisfies the requirement:\
-"The output of any channel should be displayed as a spectrum on the PC."
+This satisfies the project requirement:
+
+Output of the selected channel is displayed as a spectrum on the PC.
 
 ------------------------------------------------------------------------
 
 ## Software Requirements
 
-Python 3.x\
-NumPy\
-SciPy\
-Matplotlib\
-pyrtlsdr (for SDR stage)
+Python 3.x
+
+Libraries:
+
+numpy\
+scipy\
+matplotlib\
+pyadi‑iio\
+pylibiio
 
 Installation:
 
-pip install numpy scipy matplotlib pyrtlsdr
+pip install numpy scipy matplotlib pyadi-iio pylibiio
 
 ------------------------------------------------------------------------
 
-## Hardware Requirements (SDR Stage)
-
-RTL-SDR USB dongle\
-Antenna\
-PC/Laptop
-
-Optional alternatives:
+## Hardware Requirements
 
 ADALM Pluto SDR\
-HackRF
+USB cable\
+PC or laptop\
+Antenna
 
-------------------------------------------------------------------------
+Optional:
 
-## Simulation Implementation Steps
-
-1 Generate multi-channel signal\
-2 Add Gaussian noise\
-3 Compute FFT spectrum\
-4 Detect peaks (channels)\
-5 Identify strongest channel\
-6 Design bandpass filter\
-7 Extract channel\
-8 Display spectrum
-
-------------------------------------------------------------------------
-
-## SDR Implementation Steps
-
-1 Install pyrtlsdr library\
-2 Install RTL drivers using Zadig\
-3 Connect SDR device\
-4 Read RF samples using Python\
-5 Replace simulated input with SDR samples\
-6 Run FFT analysis\
-7 Detect channels\
-8 Extract selected channel\
-9 Display real spectrum
+RTL‑SDR
 
 ------------------------------------------------------------------------
 
 ## Key Python Functions Used
 
-np.arange() -- Creates time samples for signal generation
+np.arange() -- Creates discrete time samples
 
-np.sin() -- Generates sinusoidal channel signals
+np.sin() -- Generates channel signals
 
-np.random.normal() -- Simulates wireless noise
+np.random.normal() -- Adds Gaussian noise
 
-np.fft.fft() -- Computes frequency spectrum
+np.fft.fft() -- Performs frequency analysis
 
-np.fft.fftfreq() -- Generates frequency axis
+np.fft.fftfreq() -- Creates frequency axis
 
-scipy.signal.find_peaks() -- Detects channels in spectrum
+scipy.signal.find_peaks() -- Detects active channels
+
+np.argmax() -- Selects strongest channel
 
 scipy.signal.butter() -- Designs bandpass filter
 
 scipy.signal.filtfilt() -- Applies digital filter
 
-np.argmax() -- Finds strongest channel
+np.sum() -- Computes signal power
 
 ------------------------------------------------------------------------
 
-## Project Features
+## Features Implemented
 
-Multi-channel signal simulation\
-FFT based spectrum analysis\
+Multi‑channel signal simulation\
+FFT based spectrum analyzer\
 Automatic channel detection\
-Automatic strongest channel selection\
+Strongest channel selection\
 Digital channel extraction\
 Spectrum visualization\
-Real RF integration capability
+SDR integration\
+4G/5G band monitoring capability
 
 ------------------------------------------------------------------------
 
 ## Learning Outcomes
 
+Understanding SDR receiver architecture\
 Understanding FFT based spectrum analysis\
-Understanding digital channel receivers\
-Understanding signal filtering\
-Practical exposure to SDR concepts\
-Implementation of DSP algorithms in Python\
-Understanding signal power measurement
+Understanding digital filtering\
+Understanding signal power measurement\
+Understanding RF spectrum monitoring\
+Practical exposure to Pluto SDR\
+Python based DSP implementation
 
 ------------------------------------------------------------------------
 
 ## Applications
 
-Spectrum monitoring\
-Software Defined Radio\
-Digital communication receivers\
+Spectrum monitoring systems\
+Software Defined Radio receivers\
+Wireless communication analysis\
 Signal intelligence systems\
-Wireless channel analysis\
-RF signal monitoring
+RF channel monitoring\
+Digital communication receivers
 
 ------------------------------------------------------------------------
 
 ## Future Improvements
 
-Real-time spectrum visualization\
+Real time spectrum visualization\
 Waterfall spectrum display\
 Multiple channel extraction\
 Channel bandwidth estimation\
 Signal classification\
-OFDM signal detection
+OFDM signal detection\
+Automatic noise floor tracking
 
 ------------------------------------------------------------------------
 
 ## Conclusion
 
-This project demonstrates the implementation of a basic digital channel
-receiver using Python and SDR concepts. The system successfully detects
-multiple channels, automatically selects the strongest signal, extracts
-it using filtering, and displays its spectrum. The SDR integration
-enables extension from simulation to real RF signal analysis.
+This project demonstrates the design and implementation of a basic SDR
+based digital channel receiver. The system successfully detects
+channels, selects the strongest signal, extracts it using digital
+filtering, and displays its spectrum. The project shows how DSP
+techniques can be combined with SDR hardware to analyze real wireless
+signals in 4G/5G frequency bands.
+
+The project provides practical understanding of receiver design,
+spectrum analysis, and SDR based signal processing.
